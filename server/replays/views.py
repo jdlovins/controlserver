@@ -73,7 +73,7 @@ def replay_info(replay_id):
     if replay is None:
         error = json.dumps({
             "error": "Invalid recording ID",
-            "error_code": 200
+            "error_code": 400
         })
         return Response(response=error, status=400, mimetype="application/json")
     else:

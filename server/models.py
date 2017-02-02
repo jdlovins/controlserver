@@ -43,6 +43,22 @@ class Replay(db.Model):
     isDeleted = db.Column(db.Integer)
     md5 = db.Column(db.VARCHAR(64))
 
+
+class Server(db.Model):
+    __tablename__ = "cs_servers"
+    serverID = db.Column(db.Integer, primary_key=True)
+    serverAddress = db.Column(db.VARCHAR(32))
+    hostName = db.Column(db.VARCHAR(64))
+    dateCreated = db.Column(db.TIMESTAMP)
+    currentMap = db.Column(db.VARCHAR(64))
+    isBotEnabled = db.Column(db.Integer)
+
+    def __init__(self, address, hostname, enabled):
+        self.serverAddress = address
+        self.hostName = hostname
+        self.isBotEnabled = enabled
+
+
     def to_dict(self):
         return dict(recordingID=self.recordingID, mapID=self.mapID, playerID=self.playerID, stage=self.stage,
                     type=self.stage, time=self.time, completionDate=str(self.completionDate), isUploaded=self.isDeleted,

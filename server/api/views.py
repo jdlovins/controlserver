@@ -1,10 +1,13 @@
+from server import db
 from server.api import api
-from flask import current_app, request
+from flask import current_app, request, url_for
 from server.discord import send_discord_message
+from server.models import Server
+from sqlalchemy import exc
 
 
-@api.route('/<uuid:server_key>/update', methods=['POST'])
-def update_server_information(server_key):
+@api.route('/<int:server_id>/update', methods=['POST'])
+def update_server_information(server_id):
     """
     Updates the server object with what map it is currently on. This is useful for when a new record gets set, we know
     which servers to send an update recording command to.
@@ -12,27 +15,37 @@ def update_server_information(server_key):
     """
     map = request.form.get('map')
 
-    server = current_app.servers.get_server_by_id(server_key)
+    server = Server.query.filter_by(serverID=server_id).first()
 
     if server is None:
-        return "Bad server UUID", 400
+        return "Bad server ID", 400
 
     if map is None:
         return "No map specified", 400
 
-    server.map = map
+    server.currentMap = map
+
+    try:
+        db.session.add(server)
+        db.session.commit()
+    except exc.SQLAlchemyError:
+        send_discord_message(f'[Control Server] - Something went wrong when updating server {server_id}')
+        return "Something went wrong", 400
 
     return "ok", 200
 
 
 @api.route('/discord/send', methods=['POST'])
-def discord_send_message():
+def discord_send():
     """
     Pushes a message to the discord webhook
     :return: success or failure depending on the result
     """
 
     message = request.form.get('message')
+
+    if message is None:
+        return "No message specified", 400
 
     payload = f'[Control Server] - {message}'
 

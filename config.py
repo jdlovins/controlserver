@@ -7,6 +7,7 @@ class Config:
     SQLALCHEMY_COMMIT_ON_TEARDOWN = True
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     SQLALCHEMY_RECORD_QUERIES = True
+    DISCORD_WEBHOOK = os.environ.get('DISCORD_WEBHOOK')
 
 
 class DevelopmentConfig(Config):

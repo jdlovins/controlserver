@@ -4,7 +4,7 @@ from flask import current_app
 
 
 def send_discord_message(message):
-    url = current_app.config['discord_webhook']
+    url = current_app.config['DISCORD_WEBHOOK']
 
     headers = {'content-type': 'application/json'}
     data = json.dumps({
