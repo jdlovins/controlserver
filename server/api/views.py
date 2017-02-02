@@ -1,7 +1,7 @@
 from server import db
 from server.api import api
 from flask import current_app, request, url_for
-from server.discord import send_discord_message
+from server.discord import send_discord_message, send_error_message
 from server.models import Server
 from sqlalchemy import exc
 
@@ -29,7 +29,7 @@ def update_server_information(server_id):
         db.session.add(server)
         db.session.commit()
     except exc.SQLAlchemyError:
-        send_discord_message(f'[Control Server] - Something went wrong when updating server {server_id}')
+        send_error_message(f'Something went wrong when updating server {server_id}')
         return "Something went wrong", 400
 
     return "ok", 200

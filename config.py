@@ -8,6 +8,7 @@ class Config:
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     SQLALCHEMY_RECORD_QUERIES = True
     DISCORD_WEBHOOK = os.environ.get('DISCORD_WEBHOOK')
+    REPLAY_FOLDER = 'static/replays/'
 
 
 class DevelopmentConfig(Config):

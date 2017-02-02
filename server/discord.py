@@ -3,6 +3,11 @@ import json
 from flask import current_app
 
 
+def send_error_message(message):
+    error = f'[Control Server] - {message}'
+    send_discord_message(error)
+
+
 def send_discord_message(message):
     url = current_app.config['DISCORD_WEBHOOK']
 

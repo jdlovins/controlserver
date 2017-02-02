@@ -1,6 +1,4 @@
 from flask import Flask
-#from server.config import Config
-from server.servers import Servers
 from server.models import db
 from config import config
 
@@ -9,7 +7,6 @@ def create_app(config_name):
 
     app = Flask(__name__)
     app.config.from_object(config[config_name])
-    # app.servers = servers
 
     from server.main import main
     app.register_blueprint(main)

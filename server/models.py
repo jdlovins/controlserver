@@ -43,6 +43,15 @@ class Replay(db.Model):
     isDeleted = db.Column(db.Integer)
     md5 = db.Column(db.VARCHAR(64))
 
+    def to_dict(self):
+        return dict(recordingID=self.recordingID, mapID=self.mapID, playerID=self.playerID, stage=self.stage,
+                    type=self.stage, time=self.time, completionDate=str(self.completionDate), isUploaded=self.isDeleted,
+                    isDeleted=self.isDeleted, md5=self.md5,
+                    name=self.get_file_name())
+
+    def get_file_name(self):
+        return f'{self.map.name}_{self.recordingID}_{self.type}_{self.stage}.rec'
+
 
 class Server(db.Model):
     __tablename__ = "cs_servers"
@@ -57,10 +66,3 @@ class Server(db.Model):
         self.serverAddress = address
         self.hostName = hostname
         self.isBotEnabled = enabled
-
-
-    def to_dict(self):
-        return dict(recordingID=self.recordingID, mapID=self.mapID, playerID=self.playerID, stage=self.stage,
-                    type=self.stage, time=self.time, completionDate=str(self.completionDate), isUploaded=self.isDeleted,
-                    isDeleted=self.isDeleted, md5=self.md5,
-                    name=f'{self.map.name}_{self.recordingID}_{self.type}_{self.stage}.rec')

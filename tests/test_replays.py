@@ -22,4 +22,3 @@ class BasicsTestCase(unittest.TestCase):
         # test empty database
         req = self.client.get(url_for('replays.list_replays'))
         self.assertTrue(req.status_code == 200)
-
