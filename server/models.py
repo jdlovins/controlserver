@@ -3,6 +3,21 @@ from flask_sqlalchemy import SQLAlchemy
 db = SQLAlchemy()
 
 
+class Server(db.Model):
+    __tablename__ = "cs_servers"
+    serverID = db.Column(db.Integer, primary_key=True)
+    serverAddress = db.Column(db.VARCHAR(32))
+    hostName = db.Column(db.VARCHAR(64))
+    dateCreated = db.Column(db.TIMESTAMP)
+    currentMap = db.Column(db.VARCHAR(64))
+    isBotEnabled = db.Column(db.Integer)
+
+    def __init__(self, address, hostname, enabled):
+        self.serverAddress = address
+        self.hostName = hostname
+        self.isBotEnabled = enabled
+
+
 class Map(db.Model):
     __tablename__ = "cs_maps"
     mapID = db.Column(db.Integer, primary_key=True)
@@ -28,6 +43,26 @@ class Player(db.Model):
     replays = db.relationship("Replay", lazy="dynamic")
 
 
+class Time(db.Model):
+    __tablename__ = "cs_times"
+    runID = db.Column(db.Integer, primary_key=True)
+    mapID = db.Column(db.Integer, db.ForeignKey(Map.mapID))
+    map = db.relationship("Map")
+    playerID = db.Column(db.Integer, db.ForeignKey(Player.playerID))
+    player = db.relationship("Player")
+    type = db.Column(db.Integer)
+    stage = db.Column(db.Integer)
+    time = db.Column(db.FLOAT)
+    rank = db.Column(db.Integer)
+    dateCreated = db.Column(db.TIMESTAMP)
+    dateUpdated = db.Column(db.TIMESTAMP)
+    serverID = db.Column(db.Integer, db.ForeignKey(Server.serverID))
+    server = db.relationship("Server")
+    completions = db.Column(db.Integer)
+    bestRank = db.Column(db.Integer)
+    dateDemoted = db.Column(db.TIMESTAMP)
+
+
 class Replay(db.Model):
     __tablename__ = "cs_recordings"
     recordingID = db.Column(db.Integer, primary_key=True)
@@ -46,23 +81,14 @@ class Replay(db.Model):
     def to_dict(self):
         return dict(recordingID=self.recordingID, mapID=self.mapID, playerID=self.playerID, stage=self.stage,
                     type=self.stage, time=self.time, completionDate=str(self.completionDate), isUploaded=self.isDeleted,
-                    isDeleted=self.isDeleted, md5=self.md5,
-                    name=self.get_file_name())
+                    isDeleted=self.isDeleted, md5=self.md5, name=self.get_file_name(), isRecord=self.is_record())
 
     def get_file_name(self):
         return f'{self.map.name}_{self.recordingID}_{self.type}_{self.stage}.rec'
 
+    def is_record(self):
+        record = Time.query.filter_by(rank=1, mapID=self.mapID, type=self.type,
+                                      stage=self.stage, playerID=self.playerID).order_by(Time.type, Time.stage).first()
 
-class Server(db.Model):
-    __tablename__ = "cs_servers"
-    serverID = db.Column(db.Integer, primary_key=True)
-    serverAddress = db.Column(db.VARCHAR(32))
-    hostName = db.Column(db.VARCHAR(64))
-    dateCreated = db.Column(db.TIMESTAMP)
-    currentMap = db.Column(db.VARCHAR(64))
-    isBotEnabled = db.Column(db.Integer)
+        return True if record else False
 
-    def __init__(self, address, hostname, enabled):
-        self.serverAddress = address
-        self.hostName = hostname
-        self.isBotEnabled = enabled

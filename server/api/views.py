@@ -1,6 +1,6 @@
 from server import db
 from server.api import api
-from flask import current_app, request, url_for
+from flask import request
 from server.discord import send_discord_message, send_error_message
 from server.models import Server
 from sqlalchemy import exc

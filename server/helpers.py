@@ -1,7 +1,4 @@
-import json
-import requests
 from server.models import Replay, Server
-from flask import current_app
 
 
 def push_recording_to_servers(replay_id, server_id):
