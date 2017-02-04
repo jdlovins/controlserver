@@ -80,7 +80,7 @@ class Replay(db.Model):
 
     def to_dict(self):
         return dict(recordingID=self.recordingID, mapID=self.mapID, playerID=self.playerID, stage=self.stage,
-                    type=self.stage, time=self.time, completionDate=str(self.completionDate), isUploaded=self.isDeleted,
+                    type=self.stage, time=self.time, completionDate=str(self.completionDate), isUploaded=self.isUploaded,
                     isDeleted=self.isDeleted, md5=self.md5, name=self.get_file_name(), isRecord=self.is_record())
 
     def get_file_name(self):
