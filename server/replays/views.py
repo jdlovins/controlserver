@@ -1,7 +1,6 @@
 import os
 import json
 from flask import current_app, request, Response, send_file
-from sqlalchemy import func
 from server.replays import replays
 from server.models import Replay, Server, db
 from server.helpers import push_recording_to_servers
@@ -33,12 +32,13 @@ def upload_replay(replay_id):
 
         file = request.files['replay']
 
-        server_id = request.form.get('server_id')
+        server_key = request.form.get('server_key')
+        length = request.form.get('length')
 
-        server = Server.query.filter_by(serverID=server_id).first()
+        server = Server.query.filter_by(serverKey=server_key).first()
 
-        if server_id is None or server is None:
-            return "invalid server id", 400
+        if server_key is None or server is None:
+            return "invalid server key", 400
 
         filename = replay.get_file_name()
 
@@ -52,9 +52,11 @@ def upload_replay(replay_id):
             send_error_message(error)
             return "failure", 400
 
-        push_recording_to_servers(replay_id, server_id)
+        # fix this to use server_key
+        #push_recording_to_servers(replay_id, server_id)
 
         replay.isUploaded = True
+        replay.length = length
         db.session.add(replay)
         db.session.commit()
 
@@ -77,36 +79,8 @@ def list_replays():
     :return: A JSON formatted array
     """
 
-    replay_list = json.dumps([replay.to_dict() for replay in Replay.query.all()], indent=4)
+    replay_list = json.dumps({"data": [replay.to_dict() for replay in Replay.query.all()]}, indent=4)
     return Response(response=replay_list, status=200, mimetype="application/json")
-
-
-@replays.route('/<int:map_id>/list', methods=['GET'])
-def list_replay_by_map(map_id):
-    """
-    This gets all of the replays for a specific map
-    :param map_id: the ID of the map
-    :return: A JSON formatted array
-    """
-
-    replay_list = json.dumps([replay.to_dict() for replay in Replay.query.filter_by(mapID=map_id).all()], indent=4)
-    return Response(response=replay_list, status=200, mimetype="application/json")
-
-
-@replays.route('/<int:map_id>/best', methods=['GET'])
-def list_best_replays_by_map(map_id):
-    """
-    This gets the highest recording ID for each zone. In our system the highest should mean the newest and fastest
-    :param map_id: the ID of the map
-    :return: A JSON formatted array
-    """
-
-    best_replays = Replay.query.filter_by(mapID=map_id, isUploaded=True, isDeleted=False).filter(Replay.recordingID.in_(
-        db.session.query(func.max(Replay.recordingID)).filter_by(mapID=map_id).group_by(Replay.stage, Replay.type)
-    )).all()
-
-    resp = json.dumps([replay.to_dict() for replay in best_replays], indent=4)
-    return Response(response=resp, status=200, mimetype="application/json")
 
 
 @replays.route('/<int:replay_id>/info', methods=['GET'])
@@ -118,8 +92,9 @@ def replay_info(replay_id):
     """
 
     replay = Replay.query.filter_by(recordingID=replay_id).first()
+
     if replay is None:
         return "invalid recording ID", 400
     else:
-        data = json.dumps(replay.to_dict())
+        data = json.dumps({"data": replay.to_dict()}, indent=4)
         return Response(response=data, status=200, mimetype="application/json")

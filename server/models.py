@@ -11,6 +11,7 @@ class Server(db.Model):
     dateCreated = db.Column(db.TIMESTAMP)
     currentMap = db.Column(db.VARCHAR(64))
     isBotEnabled = db.Column(db.Integer)
+    serverKey = db.Column(db.VARCHAR(128))
 
     def __init__(self, address, hostname, enabled):
         self.serverAddress = address
@@ -77,11 +78,13 @@ class Replay(db.Model):
     isUploaded = db.Column(db.Integer)
     isDeleted = db.Column(db.Integer)
     md5 = db.Column(db.VARCHAR(64))
+    length = db.Column(db.Integer)
 
     def to_dict(self):
-        return dict(recordingID=self.recordingID, mapID=self.mapID, playerID=self.playerID, stage=self.stage,
-                    type=self.stage, time=self.time, completionDate=str(self.completionDate), isUploaded=self.isUploaded,
-                    isDeleted=self.isDeleted, md5=self.md5, name=self.get_file_name(), isRecord=self.is_record())
+        return dict(recording_id=self.recordingID, map_id=self.mapID, player_id=self.playerID, user_name=self.player.name,
+                    stage=self.stage, type=self.type, time=self.time, completion_date=str(self.completionDate),
+                    is_uploaded=self.isUploaded, is_deleted=self.isDeleted, file_name=self.get_file_name(),
+                    length=self.length, is_record=self.is_record())
 
     def get_file_name(self):
         return f'{self.map.name}_{self.recordingID}_{self.type}_{self.stage}.rec'
