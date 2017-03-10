@@ -1,5 +1,7 @@
 #!/usr/bin/env python
 import os
+import sys
+
 COV = None
 if os.environ.get('FLASK_COVERAGE'):
     import coverage
@@ -25,12 +27,12 @@ manager = Manager(app)
 def test(coverage=False):
     """Run the unit tests."""
     if coverage and not os.environ.get('FLASK_COVERAGE'):
-        import sys
         os.environ['FLASK_COVERAGE'] = '1'
         os.execvp(sys.executable, [sys.executable] + sys.argv)
     import unittest
     tests = unittest.TestLoader().discover('tests')
-    unittest.TextTestRunner(verbosity=3).run(tests)
+    ret = unittest.TextTestRunner(verbosity=3).run(tests).wasSuccessful()
+    sys.exit(not ret)
     """
     if COV:
         COV.stop()
