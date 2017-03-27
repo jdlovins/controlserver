@@ -15,6 +15,8 @@ def upload_replay(replay_id):
     if replay is None:
         return "Invalid replay id", 400
 
+    server_key = request.form.get('server_key')
+
     if request.method == "GET":
 
         filename = replay.get_file_name()
@@ -32,7 +34,6 @@ def upload_replay(replay_id):
 
         file = request.files['replay']
 
-        server_key = request.form.get('server_key')
         length = request.form.get('length')
 
         server = Server.query.filter_by(serverKey=server_key).first()
@@ -63,6 +64,11 @@ def upload_replay(replay_id):
         return "success", 200
 
     if request.method == "DELETE":
+
+        server = Server.query.filter_by(serverKey=server_key).first()
+
+        if server_key is None or server is None:
+            return "invalid server key", 400
 
         replay.isDeleted = True
 
