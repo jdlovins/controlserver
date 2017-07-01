@@ -77,7 +77,6 @@ class Replay(db.Model):
     completionDate = db.Column(db.TIMESTAMP)
     isUploaded = db.Column(db.Integer)
     isDeleted = db.Column(db.Integer)
-    md5 = db.Column(db.VARCHAR(64))
     length = db.Column(db.Integer)
 
     def to_dict(self):
