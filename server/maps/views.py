@@ -30,8 +30,9 @@ def list_best_replays_by_map(map_id):
     zone = request.args.get('zone')
     code = 200
 
-    best_replays = Replay.query.filter_by(mapID=map_id, isUploaded=True, isDeleted=False).filter(Replay.recordingID.in_(
-        db.session.query(func.max(Replay.recordingID)).filter_by(mapID=map_id).group_by(Replay.stage, Replay.type)
+    best_replays = Replay.query.filter_by(mapID=map_id).filter(Replay.recordingID.in_(
+        db.session.query(func.max(Replay.recordingID)).filter_by(mapID=map_id,  isUploaded=True, isDeleted=False).
+        group_by(Replay.stage, Replay.type)
     ))
 
     if zone_type is not None:
