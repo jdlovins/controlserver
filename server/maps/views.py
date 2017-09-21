@@ -24,6 +24,8 @@ def list_replay_by_map(map_id):
     if zone is not None:
         replays = Replay.filter_by(stage=zone)
 
+    replays = replays.all()
+
     replay_list = json.dumps({"data": [replay.to_dict() for replay in replays]}, indent=4)
     return Response(response=replay_list, status=200, mimetype="application/json")
 
