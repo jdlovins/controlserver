@@ -54,7 +54,7 @@ def upload_replay(replay_id):
             return "failure", 400
 
         # fix this to use server_key
-        #push_recording_to_servers(replay_id, server_id)
+        # push_recording_to_servers(replay_id, server_id)
 
         replay.isUploaded = True
         replay.length = length
@@ -64,6 +64,7 @@ def upload_replay(replay_id):
         return "success", 200
 
     if request.method == "DELETE":
+
 
         server = Server.query.filter_by(serverKey=server_key).first()
 

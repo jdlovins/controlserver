@@ -13,8 +13,18 @@ def list_replay_by_map(map_id):
     :return: A JSON formatted array
     """
 
-    replay_list = json.dumps({"data": [replay.to_dict() for replay in
-                                       Replay.query.filter_by(mapID=map_id).all()]}, indent=4)
+    zone_type = request.args.get('type')
+    zone = request.args.get('zone')
+
+    replays = Replay.query.filter_by(mapID=map_id)
+
+    if zone_type is not None:
+        replays = replays.filter_by(type=zone_type)
+
+    if zone is not None:
+        replays = Replay.filter_by(stage=zone)
+
+    replay_list = json.dumps({"data": [replay.to_dict() for replay in replays]}, indent=4)
     return Response(response=replay_list, status=200, mimetype="application/json")
 
 
