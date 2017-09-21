@@ -22,7 +22,7 @@ def list_replay_by_map(map_id):
         replays = replays.filter_by(type=zone_type)
 
     if zone is not None:
-        replays = Replay.filter_by(stage=zone)
+        replays = replays.filter_by(stage=zone)
 
     replays = replays.all()
 
